@@ -38,3 +38,5 @@ $ cd chAI
 $ pip install -r requirements.txt
 $ python ch.py
 ```
+
+![visitors](https://visitor-badge.glitch.me/badge?page_id=r1cc4rd0m4zz4/chAI&left_color=green&right_color=red)
