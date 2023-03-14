@@ -2,9 +2,10 @@ import openai
 import argparse
 import sys
 import os
+import platform
 import json
-#import simplejson as json
 from prompt_toolkit import prompt
+from prompt_toolkit.history import FileHistory
 
 parser = argparse.ArgumentParser(description='Chattare con ChatGPT API')
 parser.add_argument('--key', type=str, help='OpenAI API key')
@@ -28,13 +29,14 @@ def main(args):
     main_prompt(messages)
 
 def main_prompt(messages):
-    text = prompt('> ')
+    history = FileHistory('.my_history_file')
+    text = prompt('> ', history=history)
     if text == 'quit':
         save_chat(messages)
         sys.exit(1)
     elif text == 'clear':
         save_chat(messages)
-        os.system('clear')
+        os.system('cls' if platform.system() == 'Windows' else 'clear')
         messages = []
         main_prompt(messages)
     else:
@@ -87,4 +89,5 @@ def save_chat(messages):
 
 if __name__ == '__main__':
     args = parser.parse_args()
+    os.system('cls' if platform.system() == 'Windows' else 'clear')
     main(args)
