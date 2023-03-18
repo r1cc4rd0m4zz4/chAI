@@ -9,6 +9,7 @@ Un'interfaccia testuale per tenere in una finestra di terminale ChatGPT di OpenA
  * Imposta la chiave API OpenAI in una variabile d'ambiente (OPENAI_API_KEY) o come parametro
  * Importa i messaggi di conversazione da un file json (.json)
  * Imposta il contesto della conversazione da un file di testo (.system) o con il comando `system`
+ * In caso di errori di connessione ai server di openAI dovuti a congestione momentanea del traffico vengono rieseguite le richieste
  * Comando `clear` per iniziare una nuova chat salvando la precendente conversazione in un JSON
  * Inserire `quit` per salvare la chat in un JSON e tornare al terminale
 

@@ -2,6 +2,7 @@ import openai
 import argparse
 import sys
 import os
+import time
 import platform
 import json
 from prompt_toolkit import prompt
@@ -58,7 +59,7 @@ def main_prompt(messages):
 
 def query_chatgpt(messages):
     try:
-        response = openai.ChatCompletion.create(
+        response = try_openai_chat_completion(
             model="gpt-3.5-turbo",
             temperature=0.9,
             messages=messages
@@ -69,16 +70,35 @@ def query_chatgpt(messages):
     messages.append({"role": "assistant", "content": response})
     print(f'\n{response}\n')
     main_prompt(messages)
-    
+
+def try_openai_chat_completion(model, temperature, messages):
+    retry_count = 0
+    while retry_count < 3:
+        try:
+            response = openai.ChatCompletion.create(
+                model=model,
+                temperature=temperature,
+                messages=messages
+            )
+            return response
+        except openai.errors.APIError as e:
+            if "ConnectTimeout" in str(e) or "ReadTimeout" in str(e) or "WriteTimeout" in str(e):
+                print("<Connection error, tentativo {retry_count}/3 tra 5 secondi>")
+                retry_count += 1
+                time.sleep(5)
+            else:
+                # if error is due to other issues, raise the error
+                raise e        
+    raise Exception("Richiesta non eseguita dopo aver tentato 3 connessioni ai server di openAI")
+
 def save_chat(messages):
     # se il messages è vuoto non effettuare il salvataggio
     if len(messages) == 0:
         return
     
     messages.append({"role": "user", "content": "Dai un breve titolo alla conversazione, massimo 24 caratteri"})
-    # intercetta l'errore http 4xx/5xx e aggiungi un try/except
     try:
-        response = openai.ChatCompletion.create(
+        response = try_openai_chat_completion(
             model="gpt-3.5-turbo",
             temperature=0.9,
             messages=messages
